@@ -1,14 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"log"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+)
 
 func main() {
 	flag.Parse()
-
-	if *version {
-		fmt.Println(VERSION)
-		os.Exit(0)
-	}
 
 	log.Printf("Watching for environment objects...")
 

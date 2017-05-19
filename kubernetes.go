@@ -1,10 +1,23 @@
 package main
 
+import (
+	"encoding/json"
+	"errors"
+	"log"
+	"net/http"
+	"time"
+)
+
 var (
 	apiHost                   = "http://127.0.0.1:8001"
 	environmentsEndpoint      = "/apis/stable.xebia.com/v1/namespaces/default/environment"
 	environmentsWatchEndpoint = "/apis/stable.xebia.com/v1/namespaces/default/environment?watch=true"
 )
+
+type EnvironmentEvent struct {
+	Type   string      `json:"type"`
+	Object Environment `json:"object"`
+}
 
 type Environment struct {
 	ApiVersion string            `json:"apiVersion"`
@@ -24,7 +37,7 @@ type EnvironmentList struct {
 	Items      []Environment     `json:"items"`
 }
 
-func getEnvironments() ([]Environments, error) {
+func getEnvironments() ([]Environment, error) {
 	var resp *http.Response
 	var err error
 	for {
@@ -45,4 +58,37 @@ func getEnvironments() ([]Environments, error) {
 	}
 
 	return envList.Items, nil
+}
+
+func monitorEnvironmentEvents() (<-chan EnvironmentEvent, <-chan error) {
+	events := make(chan EnvironmentEvent)
+	errc := make(chan error, 1)
+	go func() {
+		for {
+			resp, err := http.Get(apiHost + environmentsWatchEndpoint)
+			if err != nil {
+				errc <- err
+				time.Sleep(5 * time.Second)
+				continue
+			}
+			if resp.StatusCode != 200 {
+				errc <- errors.New("Invalid status code: " + resp.Status)
+				time.Sleep(5 * time.Second)
+				continue
+			}
+
+			decoder := json.NewDecoder(resp.Body)
+			for {
+				var event EnvironmentEvent
+				err = decoder.Decode(&event)
+				if err != nil {
+					errc <- err
+					break
+				}
+				events <- event
+			}
+		}
+	}()
+
+	return events, errc
 }
