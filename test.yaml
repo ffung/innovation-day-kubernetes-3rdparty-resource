@@ -1,0 +1,15 @@
+---
+apiVersion: "stable.xebia.com/v1"
+kind: Environment
+metadata:
+  name: my-environment
+spec:
+  environment-namespace: bla
+---
+apiVersion: "stable.xebia.com/v1"
+kind: Environment
+metadata:
+  name: my-environment2
+spec:
+  environment-namespace: bla2
+
