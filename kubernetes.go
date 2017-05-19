@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"github.com/ericchiang/k8s"
+	"github.com/ericchiang/k8s/api/v1"
+	metav1 "github.com/ericchiang/k8s/apis/meta/v1"
 	"log"
 	"net/http"
 	"time"
@@ -91,4 +95,31 @@ func monitorEnvironmentEvents() (<-chan EnvironmentEvent, <-chan error) {
 	}()
 
 	return events, errc
+}
+
+func createNamespace(client *k8s.Client, name string) error {
+	ns := &v1.Namespace{
+		Metadata: &metav1.ObjectMeta{
+			Name: &name,
+		},
+	}
+	_, err := client.CoreV1().CreateNamespace(context.TODO(), ns)
+
+	if err != nil {
+		log.Printf("Created namespace: %s", name)
+	} else {
+		log.Printf("Creating namespace failed: %s, reason: %v", name, err)
+	}
+
+	return err
+}
+
+func deleteNamespace(client *k8s.Client, name string) error {
+	err := client.CoreV1().DeleteNamespace(context.TODO(), name)
+	if err != nil {
+		log.Printf("Deleted namespace: %s", name)
+	} else {
+		log.Printf("Deleting namespace failed: %s, reason: %v", name, err)
+	}
+	return err
 }

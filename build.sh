@@ -1,9 +1,10 @@
 #!/bin/bash
-export GOPATH="/User/fai/work/xebia/go"
+export GOPATH="/Users/fai/work/xebia/go"
 export GOOS="linux"
 export GOARCH="amd64"
 
 go fmt
+go get ./...
 go build
 cp innovation-day-kubernetes-3rdparty-resource environment-manager
 

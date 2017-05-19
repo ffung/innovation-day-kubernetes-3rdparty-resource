@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"sync"
+
+	"github.com/ericchiang/k8s"
 )
 
 func syncEnvironments() error {
@@ -59,9 +61,22 @@ func processEnvironmentEvent(c EnvironmentEvent) error {
 
 func deleteEnvironment(e Environment) error {
 	log.Println("Deleting Environment")
-	return nil
+	client, err := k8s.NewInClusterClient()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return deleteNamespace(client, e.Spec.EnvironmentNamespace)
 }
+
 func processEnvironment(e Environment) error {
 	log.Println("Processing Environment")
-	return nil
+
+	client, err := k8s.NewInClusterClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return createNamespace(client, e.Spec.EnvironmentNamespace)
 }
