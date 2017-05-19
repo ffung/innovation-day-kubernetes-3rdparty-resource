@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	apiHost                   = "http://127.0.0.1:8001"
-	environmentsEndpoint      = "/apis/stable.xebia.com/v1/namespaces/default/environment"
-	environmentsWatchEndpoint = "/apis/stable.xebia.com/v1/namespaces/default/environment?watch=true"
+	apiHost                   = "http://127.0.0.1:8080"
+	environmentsEndpoint      = "/apis/stable.xebia.com/v1/namespaces/default/environments"
+	environmentsWatchEndpoint = "/apis/stable.xebia.com/v1/namespaces/default/environments?watch=true"
 )
 
 type EnvironmentEvent struct {

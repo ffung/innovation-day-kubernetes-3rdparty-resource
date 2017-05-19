@@ -1,0 +1,20 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: environment-manager
+  name: environment-manager
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: environment-manager
+      name: environment-manager
+    spec:
+      hostNetwork: true
+      containers:
+        - name: environment-manager
+          image: environment-manager:bla
+          imagePullPolicy: Never
